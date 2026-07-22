@@ -1,0 +1,19 @@
+{
+  "name": "globalnco-site",
+  "version": "1.0.0",
+  "description": "Site institucional Global & Co. — globalnco.com",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.4.1",
+    "@fontsource/cormorant-garamond": "^5.2.5",
+    "@fontsource/poppins": "^5.2.5",
+    "astro": "^5.12.0"
+  }
+}
