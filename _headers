@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CountryCards from '../components/CountryCards.astro';
+import { absoluteUrl, type Lang } from '../config/site';
+import { route, alternatesFor, COUNTRY_KEYS } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const ci = c.countriesIndex; const path = route('countries', lang);
+const schema = [{ '@type': 'ItemList', name: ci.title, itemListElement: COUNTRY_KEYS.map((k, i) => ({ '@type': 'ListItem', position: i + 1, name: c.countries[k.replace('country:', '')].name, url: absoluteUrl(route(k, lang)) })) }];
+---
+<Base lang={lang} title={ci.metaTitle} description={ci.metaDescription} path={path} alternates={alternatesFor('countries')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: ci.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{ci.title}</h1><p class="lede">{ci.lede}</p></div>
+    </div>
+  </section>
+  <section class="section section--tight"><div class="container"><CountryCards lang={lang} detailed={true} /></div></section>
+  <section class="section section--ink center">
+    <div class="container">
+      <h2 class="reveal">{c.compare.title}</h2>
+      <p class="lede reveal" style="margin-inline:auto">{c.compare.lede}</p>
+      <p class="mt-3 reveal"><a class="btn btn--gold" href={route('compare', lang)}>{ci.compareCta}</a></p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,107 @@
+---
+import { BRAND, BRAND_BY_LANG, waLink, type Lang } from '../config/site';
+import { route, SERVICE_FAMILIES, COUNTRY_KEYS } from '../i18n/routes';
+import { content } from '../data';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = content[lang];
+const brand = BRAND_BY_LANG[lang];
+const year = new Date().getFullYear();
+const reg = BRAND.registry;
+---
+
+<footer class="ft">
+  <div class="container">
+    <div class="ft__grid">
+      <div class="ft__brand">
+        <p class="ft__logo"><strong>Global &amp; Co.</strong><span>{brand.tagline} · {brand.handle}</span></p>
+        <p class="ft__desc">Consultoria boutique que estrutura vida, patrimônio e negócios de famílias e empresários brasileiros no Uruguai, Chile e Paraguai — do diagnóstico à continuidade.</p>
+        <div class="ft__social">
+          <a href={waLink(lang)} rel="noopener" target="_blank">WhatsApp</a>
+          <a href={brand.instagram} rel="noopener" target="_blank">Instagram</a>
+        </div>
+      </div>
+
+      <nav aria-label="Países">
+        <p class="ft__ttl">Países</p>
+        <ul>
+          {COUNTRY_KEYS.map((k) => (
+            <li><a href={route(k, lang)}>{c.countries[k.replace('country:', '')].name}</a></li>
+          ))}
+          <li><a href={route('compare', lang)}>Comparativo</a></li>
+        </ul>
+      </nav>
+
+      {SERVICE_FAMILIES.map((f) => (
+        <nav aria-label={c.common.serviceFamilies[f.key].name}>
+          <p class="ft__ttl">{c.common.serviceFamilies[f.key].name}</p>
+          <ul>
+            {f.services.map((s) => (<li><a href={route(s, lang)}>{c.services[s].nav}</a></li>))}
+          </ul>
+        </nav>
+      ))}
+
+      <div>
+        <p class="ft__ttl">Contato</p>
+        <ul class="ft__contact">
+          <li><a href={waLink(lang)} rel="noopener" target="_blank">{BRAND.whatsappDisplay}</a></li>
+          <li><a href={'mailto:' + BRAND.emails.contact}>{BRAND.emails.contact}</a></li>
+          <li><a href={'mailto:' + BRAND.emails.legal}>{BRAND.emails.legal}</a></li>
+          <li><a href={'mailto:' + BRAND.emails.support}>{BRAND.emails.support}</a></li>
+          <li><a href={'mailto:' + BRAND.emails.partnerships}>{BRAND.emails.partnerships}</a></li>
+          <li class="ft__hours">Seg–Sex · 9h às 18h (GMT-3)</li>
+        </ul>
+        <p class="ft__ttl ft__ttl--sp">Institucional</p>
+        <ul>
+          <li><a href={route('method', lang)}>Como trabalhamos</a></li>
+          <li><a href={route('about', lang)}>Sobre</a></li>
+          <li><a href={route('faq', lang)}>Perguntas frequentes</a></li>
+          <li><a href={route('diagnostic', lang)}>Diagnóstico</a></li>
+          <li><a href={route('privacy', lang)}>{c.common.legalNav.privacy}</a></li>
+          <li><a href={route('terms', lang)}>{c.common.legalNav.terms}</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ft__bottom">
+      {reg.show && reg.legalEntity && (
+        <p class="ft__legalentity">
+          {reg.legalEntity}{reg.number && ` · ${reg.number}`}{reg.country && ` · ${reg.country}`}
+          {reg.verifyUrl && (<> · <a href={reg.verifyUrl} rel="noopener nofollow" target="_blank">Consultar registro</a></>)}
+          {reg.address && <><br />{reg.address}</>}
+        </p>
+      )}
+      <p class="ft__disc">
+        A Global &amp; Co. é uma consultoria privada. Não representa nem possui vínculo com o Estado uruguaio, chileno, paraguaio ou brasileiro, nem com qualquer de suas instituições públicas.
+      </p>
+      <p class="ft__disc">
+        Este site tem caráter informativo e não constitui aconselhamento jurídico, fiscal, contábil ou de investimento. Cada estrutura é avaliada caso a caso, à luz da legislação vigente.
+      </p>
+      <p class="ft__copy">© {year} {BRAND.legalName} · Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ft { background: linear-gradient(165deg, var(--ink) 0%, #221a55 60%, var(--indigo) 100%); color: rgba(255,255,255,.78); padding: clamp(3rem,7vw,4.5rem) 0 2rem; font-size: .9rem; }
+  .ft__grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .ft__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .ft__grid { grid-template-columns: 1.6fr .9fr .9fr .9fr .9fr 1.2fr; } }
+  .ft__logo { display: grid; gap: .2rem; margin-bottom: .8rem; }
+  .ft__logo strong { font-family: var(--serif); font-size: 1.45rem; font-weight: 700; color: var(--white); }
+  .ft__logo span { font-size: .68rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .ft__desc { max-width: 36ch; font-size: .85rem; color: rgba(255,255,255,.6); }
+  .ft__social { display: flex; gap: 1rem; margin-top: .9rem; }
+  .ft a { color: rgba(255,255,255,.78); text-decoration: none; }
+  .ft a:hover { color: var(--gold-soft); text-decoration: underline; }
+  .ft__ttl { font-weight: 600; color: var(--white); margin-bottom: .7rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; }
+  .ft__ttl--sp { margin-top: 1.4rem; }
+  .ft ul { list-style: none; padding: 0; display: grid; gap: .42rem; }
+  .ft__contact li { color: rgba(255,255,255,.6); font-size: .84rem; }
+  .ft__hours { color: rgba(255,255,255,.5) !important; }
+  .ft__bottom { margin-top: 2.6rem; padding-top: 1.4rem; border-top: 1px solid var(--line-light); display: grid; gap: .55rem; }
+  .ft__legalentity { font-size: .78rem; color: rgba(255,255,255,.68); }
+  .ft__disc { font-size: .75rem; color: rgba(255,255,255,.46); max-width: 92ch; line-height: 1.6; }
+  .ft__copy { font-size: .75rem; color: rgba(255,255,255,.5); margin-top: .3rem; }
+</style>

@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { route, alternatesFor, COUNTRY_KEYS } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = content[lang]; const cm = c.compare; const path = route('compare', lang);
+const schema = [{ '@type': 'WebPage', '@id': absoluteUrl(path) + '#webpage', url: absoluteUrl(path), name: cm.metaTitle, description: cm.metaDescription, about: { '@id': `${SITE_URL}/#organization` } }];
+---
+<Base lang={lang} title={cm.metaTitle} description={cm.metaDescription} path={path} alternates={alternatesFor('compare')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: cm.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{cm.title}</h1><p class="lede">{cm.lede}</p></div>
+      <p class="intro reveal">{cm.intro}</p>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container">
+      <div class="section-head reveal"><h2>{cm.tableTitle}</h2></div>
+      <div class="tbl-wrap reveal">
+        <table class="cmp">
+          <thead><tr><th>Critério</th><th>Uruguai</th><th>Chile</th><th>Paraguai</th></tr></thead>
+          <tbody>{cm.criteria.map((r) => (<tr><th scope="row">{r.label}</th><td>{r.uy}</td><td>{r.cl}</td><td>{r.py}</td></tr>))}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>{cm.profiles.title}</h2></div>
+      <div class="grid grid--2">
+        {cm.profiles.items.map((p) => (<div class="card reveal"><p class="card__title">{p.t}</p><p class="card__text">{p.d}</p></div>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container warn reveal">
+      <h2>{cm.warning.title}</h2>
+      <p class="lede">{cm.warning.text}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>{cm.cta.title}</h2><p class="lede">{cm.cta.text}</p></div>
+      <div class="lead-wrap"><LeadForm lang={lang} /></div>
+      <div class="mt-3 grid grid--3">
+        {COUNTRY_KEYS.map((k) => { const co = c.countries[k.replace('country:', '')]; return (
+          <a class="card" href={route(k, lang)}><p class="card__title">{co.name}</p><p class="card__text">{co.tagline}</p></a>); })}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .intro { max-width: 72ch; font-size: 1.05rem; color: var(--text); }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+  .cmp { width: 100%; border-collapse: collapse; min-width: 700px; font-size: .9rem; }
+  .cmp th, .cmp td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--line); }
+  .cmp thead th { background: var(--ink); color: #fff; font-weight: 600; font-size: .84rem; letter-spacing: .04em; }
+  .cmp tbody th { font-weight: 600; color: var(--ink); background: var(--mist); width: 26%; }
+  .warn { max-width: 820px; border-left: 3px solid var(--gold); padding-left: 1.6rem; }
+  .lead-wrap { max-width: 720px; }
+</style>

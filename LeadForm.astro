@@ -1,0 +1,31 @@
+---
+interface Props {
+  eyebrow?: string; title: string; accent?: string; lede?: string;
+  image?: string; badges?: string[]; compact?: boolean;
+}
+const { eyebrow, title, accent, lede, image = '/img/hero-home.jpg', badges = [], compact = false } = Astro.props;
+---
+<section class:list={['hero', compact && 'hero--compact']} style={`--hero-img:url('${image}')`}>
+  <div class="container hero__in">
+    {eyebrow && <p class="eyebrow eyebrow--light">{eyebrow}</p>}
+    <h1 class="hero__title">{title}{accent && <span class="hero__accent">{accent}</span>}</h1>
+    {lede && <p class="lede hero__lede">{lede}</p>}
+    <div class="hero__cta"><slot /></div>
+    {badges.length > 0 && <div class="badge-row hero__badges">{badges.map((b) => <span>{b}</span>)}</div>}
+  </div>
+</section>
+<style>
+  .hero { position: relative; color: rgba(255,255,255,.9); padding-block: clamp(4.5rem, 11vw, 8rem); overflow: hidden;
+    background-image: linear-gradient(100deg, rgba(18,11,48,.94) 0%, rgba(20,13,52,.80) 42%, rgba(24,16,71,.42) 100%), var(--hero-img);
+    background-size: cover; background-position: center; }
+  .hero--compact { padding-block: clamp(3rem, 7vw, 5rem); }
+  .hero__in { position: relative; z-index: 1; max-width: 860px; }
+  .eyebrow--light { color: var(--gold-soft); }
+  .hero__title { font-size: var(--fs-hero); color: var(--white); font-weight: 600; margin-top: .9rem; }
+  .hero--compact .hero__title { font-size: var(--fs-h1); }
+  .hero__accent { display: block; font-style: italic; font-weight: 500; color: var(--gold); }
+  .hero__lede { margin-top: 1.2rem; color: rgba(255,255,255,.78); }
+  .hero__cta { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; }
+  .hero__cta:empty { display: none; }
+  .hero__badges { margin-top: 2.4rem; }
+</style>

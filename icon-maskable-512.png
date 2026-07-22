@@ -1,0 +1,4 @@
+---
+import ServicesIndexPage from '../../templates/ServicesIndexPage.astro';
+---
+<ServicesIndexPage lang="pt" />

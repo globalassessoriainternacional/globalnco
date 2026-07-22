@@ -1,0 +1,213 @@
+---
+import { FORM_ENDPOINT, WEB3FORMS_KEY, BRAND, waLink, type Lang } from '../config/site';
+import { route } from '../i18n/routes';
+import { content } from '../data';
+
+interface Props {
+  lang: Lang;
+  /** Pré-seleciona o país (usado nas páginas de país) */
+  presetCountry?: string;
+  /** Pré-seleciona o serviço (usado nas páginas de serviço) */
+  presetService?: string;
+  compact?: boolean;
+}
+const { lang, presetCountry = '', presetService = '', compact = false } = Astro.props;
+const c = content[lang];
+const f = c.diagnostic.form;
+const thanksUrl = route('thanks', lang);
+---
+
+<div class="lead" id="formulario">
+  <div class="lead__head">
+    <h2 class="lead__title">{f.title}</h2>
+    <p class="lead__intro">{f.intro}</p>
+  </div>
+
+  <form class="lead__form" id="lead-form" method="POST" action={FORM_ENDPOINT || undefined} novalidate>
+    {/* ---- Etapa 1 ---- */}
+    <fieldset class="step is-active" data-step="1">
+      <legend class="step__legend">{f.step1}</legend>
+
+      <label>
+        {f.country}
+        <select name="lead_pais_interesse" id="lp-country" required>
+          {c.diagnostic.form.countryOptions.map((o) => (
+            <option value={o.value} selected={o.value === presetCountry}>{o.label}</option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        {f.service}
+        <select name="lead_servico" id="lp-service" required>
+          {c.diagnostic.form.serviceOptions.map((o) => (
+            <option value={o} selected={o === presetService}>{o}</option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        {f.profile}
+        <select name="lead_perfil" required>
+          {c.diagnostic.form.profileOptions.map((o) => (<option value={o}>{o}</option>))}
+        </select>
+      </label>
+
+      <button type="button" class="btn btn--gold lead__next" data-next="2">Continuar →</button>
+    </fieldset>
+
+    {/* ---- Etapa 2 ---- */}
+    <fieldset class="step" data-step="2">
+      <legend class="step__legend">{f.step2}</legend>
+
+      <label>{f.name}<input type="text" name="nome" required autocomplete="name" /></label>
+      <label>{f.email}<input type="email" name="email" required autocomplete="email" /></label>
+      <label>{f.phone}<input type="tel" name="telefone" required autocomplete="tel" placeholder="+55 11 90000-0000" /></label>
+      <label>{f.message}<textarea name="mensagem" rows="4"></textarea></label>
+
+      <label class="lead__consent">
+        <input type="checkbox" name="consentimento" required value="sim" />
+        <span>{f.consent.replace('Política de Privacidade', '')}
+          <a href={route('privacy', lang)}>Política de Privacidade</a>.
+        </span>
+      </label>
+
+      {/* honeypot antispam */}
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="visually-hidden" aria-hidden="true" />
+
+      {/* ---- Campos de rastreamento (preenchidos por JS) ---- */}
+      {WEB3FORMS_KEY && <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />}
+      <input type="hidden" name="subject" value="Novo diagnóstico — globalnco.com" />
+      <input type="hidden" name="redirect" value={thanksUrl} />
+      <input type="hidden" name="lead_idioma" value={lang} />
+      <input type="hidden" name="lead_origem_pagina" id="lp-page" />
+      <input type="hidden" name="utm_source" id="lp-utm_source" />
+      <input type="hidden" name="utm_medium" id="lp-utm_medium" />
+      <input type="hidden" name="utm_campaign" id="lp-utm_campaign" />
+      <input type="hidden" name="utm_content" id="lp-utm_content" />
+      <input type="hidden" name="utm_term" id="lp-utm_term" />
+      <input type="hidden" name="gclid" id="lp-gclid" />
+      <input type="hidden" name="fbclid" id="lp-fbclid" />
+      <input type="hidden" name="referrer" id="lp-referrer" />
+      <input type="hidden" name="primeiro_acesso" id="lp-primeiro" />
+      <input type="hidden" name="dispositivo" id="lp-device" />
+
+      <div class="lead__actions">
+        <button type="button" class="btn btn--ghost btn--sm lead__back" data-next="1">← Voltar</button>
+        <button type="submit" class="btn btn--gold" id="lead-submit">{f.submit}</button>
+      </div>
+      <p class="lead__err" id="lead-error" role="alert" hidden></p>
+    </fieldset>
+  </form>
+
+  <div class="lead__alt">
+    <span>{f.or}</span>
+    <a class="btn btn--ghost btn--sm" href={waLink(lang, 'diagnostic')} rel="noopener" target="_blank" data-wa>
+      {BRAND.whatsappDisplay}
+    </a>
+  </div>
+
+  {!FORM_ENDPOINT && (
+    <p class="lead__note">
+      <strong>Nota técnica (visível apenas para você):</strong> o formulário está completo e captura todos os
+      campos de rastreamento. Para ativá-lo, informe o endpoint em <code>src/config/site.ts → FORM_ENDPOINT</code>.
+      Enquanto isso, os envios são direcionados ao WhatsApp com os dados preenchidos.
+    </p>
+  )}
+</div>
+
+<style>
+  .lead { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(1.4rem, 3vw, 2.2rem); box-shadow: var(--shadow-soft); }
+  .lead__head { margin-bottom: 1.4rem; }
+  .lead__title { font-family: var(--serif); font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); }
+  .lead__intro { font-size: .9rem; color: var(--muted); margin-top: .4rem; }
+  .step { border: 0; padding: 0; margin: 0; display: none; }
+  .step.is-active { display: grid; gap: 1rem; }
+  .step__legend { font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); padding: 0; margin-bottom: .2rem; }
+  .lead label { display: grid; gap: .35rem; font-size: .86rem; font-weight: 500; color: var(--ink); }
+  .lead input[type='text'], .lead input[type='email'], .lead input[type='tel'], .lead select, .lead textarea {
+    font: inherit; width: 100%; padding: .8rem .95rem; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    background: var(--white); color: var(--text);
+  }
+  .lead select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--amethyst) 50%), linear-gradient(135deg, var(--amethyst) 50%, transparent 50%); background-position: calc(100% - 20px) center, calc(100% - 15px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 2.4rem; }
+  .lead input:focus, .lead select:focus, .lead textarea:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(52,53,115,.15); }
+  .lead__consent { grid-template-columns: auto 1fr; align-items: start; gap: .6rem; font-weight: 400; font-size: .82rem; color: var(--muted); }
+  .lead__consent input { margin-top: .25rem; }
+  .lead__actions { display: flex; gap: .7rem; flex-wrap: wrap; align-items: center; }
+  .lead__err { color: #9b2c2c; font-size: .85rem; }
+  .lead__alt { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--line); font-size: .85rem; color: var(--muted); }
+  .lead__note { margin-top: 1.2rem; padding: .8rem 1rem; background: var(--mist); border-radius: var(--radius-sm); font-size: .76rem; color: var(--muted); line-height: 1.55; }
+  .lead__note code { background: rgba(24,16,71,.08); padding: .1em .4em; border-radius: 4px; }
+</style>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('lead-form');
+    if (!form) return;
+
+    /* 1) Preenche campos de rastreamento a partir da atribuição salva */
+    try {
+      var attr = JSON.parse(localStorage.getItem('gc_attr') || '{}');
+      var set = function (id, val) { var el = document.getElementById(id); if (el && val) el.value = val; };
+      set('lp-page', location.pathname);
+      set('lp-utm_source', attr.utm_source); set('lp-utm_medium', attr.utm_medium);
+      set('lp-utm_campaign', attr.utm_campaign); set('lp-utm_content', attr.utm_content);
+      set('lp-utm_term', attr.utm_term); set('lp-gclid', attr.gclid); set('lp-fbclid', attr.fbclid);
+      set('lp-referrer', attr.referrer); set('lp-primeiro', attr.primeiro_acesso); set('lp-device', attr.dispositivo);
+    } catch (e) {}
+
+    /* 2) Navegação entre etapas */
+    function go(step) {
+      form.querySelectorAll('.step').forEach(function (s) {
+        s.classList.toggle('is-active', s.dataset.step === String(step));
+      });
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    form.querySelectorAll('[data-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.dataset.next;
+        if (target === '2') {
+          var cur = form.querySelector('.step[data-step="1"]');
+          var ok = Array.prototype.every.call(cur.querySelectorAll('[required]'), function (el) { return el.reportValidity(); });
+          if (!ok) return;
+          if (window.dataLayer) window.dataLayer.push({ event: 'lead_step_1' });
+          if (window.gtag) window.gtag('event', 'lead_step_1');
+        }
+        go(target);
+      });
+    });
+
+    /* 3) Envio */
+    form.addEventListener('submit', function (e) {
+      var endpoint = form.getAttribute('action');
+      var err = document.getElementById('lead-error');
+
+      if (!endpoint) {
+        /* Sem endpoint configurado: encaminha ao WhatsApp com os dados preenchidos */
+        e.preventDefault();
+        var d = new FormData(form);
+        var msg = 'Solicitação de diagnóstico — Global & Co.\n\n'
+          + 'Nome: ' + (d.get('nome') || '') + '\n'
+          + 'E-mail: ' + (d.get('email') || '') + '\n'
+          + 'Telefone: ' + (d.get('telefone') || '') + '\n'
+          + 'País de interesse: ' + (d.get('lead_pais_interesse') || '') + '\n'
+          + 'Necessidade: ' + (d.get('lead_servico') || '') + '\n'
+          + 'Perfil: ' + (d.get('lead_perfil') || '') + '\n'
+          + (d.get('mensagem') ? 'Mensagem: ' + d.get('mensagem') + '\n' : '')
+          + 'Origem: ' + (d.get('lead_origem_pagina') || '');
+        var wa = document.querySelector('[data-wa]');
+        var base = wa ? wa.href.split('?')[0] : 'https://wa.me/';
+        if (window.dataLayer) window.dataLayer.push({ event: 'lead_submit', metodo: 'whatsapp' });
+        if (window.gtag) window.gtag('event', 'generate_lead', { method: 'whatsapp' });
+        window.open(base + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+        return;
+      }
+
+      if (window.dataLayer) window.dataLayer.push({ event: 'lead_submit', metodo: 'formulario' });
+      if (window.gtag) window.gtag('event', 'generate_lead', { method: 'form' });
+      var btn = document.getElementById('lead-submit');
+      if (btn) { btn.disabled = true; btn.textContent = btn.textContent.replace(/.*/, 'Enviando…'); }
+      if (err) err.hidden = true;
+    });
+  })();
+</script>

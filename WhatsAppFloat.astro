@@ -1,0 +1,34 @@
+---
+import { PROOF } from '../config/site';
+---
+{PROOF.stats.show && (
+  <div class="proof">
+    {PROOF.stats.items.filter((i) => i.value).map((i) => (
+      <div class="proof__item"><strong>{i.value}</strong><span>{i.label}</span></div>
+    ))}
+  </div>
+)}
+{PROOF.testimonials.show && PROOF.testimonials.items.length > 0 && (
+  <div class="tst">
+    {PROOF.testimonials.items.map((t) => (
+      <figure class="tst__i">
+        <blockquote>{t.quote}</blockquote>
+        <figcaption><strong>{t.profile}</strong><span>{t.route}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+)}
+<style>
+  .proof { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+  @media (min-width: 760px) { .proof { grid-template-columns: repeat(4, 1fr); } }
+  .proof__item { display: grid; gap: .2rem; text-align: center; }
+  .proof__item strong { font-family: var(--serif); font-size: clamp(2rem, 1.4rem + 2vw, 2.8rem); color: var(--gold); line-height: 1; }
+  .proof__item span { font-size: .82rem; color: rgba(255,255,255,.7); }
+  .tst { display: grid; gap: 1.2rem; margin-top: 2rem; }
+  @media (min-width: 860px) { .tst { grid-template-columns: repeat(3, 1fr); } }
+  .tst__i { margin: 0; padding: 1.4rem; border: 1px solid var(--line-light); border-radius: var(--radius); }
+  .tst__i blockquote { margin: 0; font-family: var(--serif); font-size: 1.08rem; font-style: italic; color: #fff; }
+  .tst__i figcaption { margin-top: .9rem; display: grid; }
+  .tst__i strong { font-size: .86rem; color: var(--gold-soft); }
+  .tst__i span { font-size: .78rem; color: rgba(255,255,255,.55); }
+</style>

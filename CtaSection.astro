@@ -1,0 +1,53 @@
+---
+import { GA_ID, type Lang } from '../config/site';
+import { route } from '../i18n/routes';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+{
+  GA_ID && (
+    <Fragment>
+    <div class="consent" id="consent-banner" role="region" aria-label="Cookies">
+      <div class="consent__inner">
+        <p>
+          {t.consent.text} <a href={route('privacy', lang)}>{t.consent.privacy}</a>.
+        </p>
+        <div class="consent__actions">
+          <button class="btn btn--gold btn--sm" id="consent-accept" type="button">
+            {t.consent.accept}
+          </button>
+          <button class="btn btn--ghost-light btn--sm" id="consent-reject" type="button">
+            {t.consent.reject}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        var banner = document.getElementById('consent-banner');
+        if (!banner) return;
+        var stored = localStorage.getItem('gc-consent');
+        if (!stored) banner.classList.add('is-open');
+        function close(value) {
+          localStorage.setItem('gc-consent', value);
+          banner.classList.remove('is-open');
+          if (value === 'granted' && window.__loadGA) window.__loadGA();
+        }
+        document.getElementById('consent-accept').addEventListener('click', function () {
+          close('granted');
+        });
+        document.getElementById('consent-reject').addEventListener('click', function () {
+          close('denied');
+        });
+      })();
+    </script>
+    </Fragment>
+  )
+}

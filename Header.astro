@@ -1,0 +1,34 @@
+---
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+interface Props {
+  items: FaqItem[];
+  /** Emite JSON-LD FAQPage (use apenas uma vez por página) */
+  withSchema?: boolean;
+}
+const { items, withSchema = false } = Astro.props;
+
+const jsonLd = withSchema
+  ? JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: items.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    })
+  : null;
+---
+
+<div class="faq">
+  {items.map((f) => (
+    <details>
+      <summary>{f.q}</summary>
+      <p class="faq__a">{f.a}</p>
+    </details>
+  ))}
+</div>
+{jsonLd && <script type="application/ld+json" set:html={jsonLd} />}

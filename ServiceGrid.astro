@@ -1,0 +1,29 @@
+---
+import { content } from '../data';
+import type { Lang } from '../config/site';
+interface Props { lang: Lang; detailed?: boolean }
+const { lang, detailed = false } = Astro.props;
+const c = content[lang];
+const steps = detailed ? c.method.steps : c.home.method.steps;
+---
+<ol class="ms">
+  {steps.map((s: any, i: number) => (
+    <li class="ms__item reveal">
+      <span class="ms__num">{String(i + 1).padStart(2, '0')}</span>
+      <div>
+        <h3 class="ms__t">{s.t}</h3>
+        <p class="ms__d">{s.d}</p>
+        {detailed && s.detail && <p class="ms__detail">{s.detail}</p>}
+      </div>
+    </li>
+  ))}
+</ol>
+<style>
+  .ms { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.2rem; counter-reset: s; }
+  @media (min-width: 900px) { .ms { grid-template-columns: repeat(4, 1fr); } }
+  .ms__item { display: grid; gap: .6rem; padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); align-content: start; }
+  .ms__num { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--gold); letter-spacing: .1em; }
+  .ms__t { font-size: 1.12rem; font-family: var(--sans); font-weight: 600; color: var(--ink); }
+  .ms__d { font-size: .9rem; color: var(--muted); margin-top: .3rem; }
+  .ms__detail { font-size: .86rem; color: var(--text); margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--line); line-height: 1.6; }
+</style>

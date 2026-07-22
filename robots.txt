@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, SITE_URL, BRAND, waLink, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const ct = c.contact; const path = route('contact', lang);
+const schema = [{ '@type': 'ContactPage', '@id': absoluteUrl(path) + '#webpage', url: absoluteUrl(path), name: ct.metaTitle, description: ct.metaDescription, mainEntity: { '@id': `${SITE_URL}/#organization` } }];
+---
+<Base lang={lang} title={ct.metaTitle} description={ct.metaDescription} path={path} alternates={alternatesFor('contact')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: ct.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{ct.title}</h1><p class="lede">{ct.lede}</p></div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="container ct">
+      <div>
+        <div class="ct__wa reveal">
+          <p class="ct__walbl">Canal mais rápido</p>
+          <a class="btn btn--gold" href={waLink(lang)} rel="noopener" target="_blank">WhatsApp {BRAND.whatsappDisplay}</a>
+          <p class="ct__hours"><strong>{ct.hours.t}</strong> {ct.hours.d}</p>
+        </div>
+        <div class="ct__list">
+          {ct.channels.map((ch) => (
+            <div class="ct__ch reveal">
+              <p class="ct__cht">{ch.t}</p>
+              <p class="ct__chd">{ch.d}</p>
+              <a class="ct__che" href={'mailto:' + ch.email}>{ch.email}</a>
+            </div>
+          ))}
+        </div>
+        <p class="ct__cov reveal">{ct.coverage}</p>
+        <p class="ct__note reveal">{ct.directNote}</p>
+      </div>
+      <div><LeadForm lang={lang} /></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .ct { display: grid; gap: 2.4rem; align-items: start; }
+  @media (min-width: 980px) { .ct { grid-template-columns: .9fr 1.1fr; } }
+  .ct__wa { padding: 1.4rem 1.5rem; background: var(--mist); border-radius: var(--radius); border: 1px solid rgba(211,172,43,.35); }
+  .ct__walbl { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .8rem; }
+  .ct__hours { margin-top: .9rem; font-size: .84rem; color: var(--muted); }
+  .ct__list { display: grid; gap: 1rem; margin-top: 1.4rem; }
+  .ct__ch { padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .ct__cht { font-weight: 600; color: var(--ink); font-size: .95rem; }
+  .ct__chd { font-size: .84rem; color: var(--muted); margin: .15rem 0 .4rem; }
+  .ct__che { font-size: .88rem; color: var(--indigo); }
+  .ct__cov, .ct__note { margin-top: 1.2rem; font-size: .84rem; color: var(--muted); line-height: 1.6; }
+</style>

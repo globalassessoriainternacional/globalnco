@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { absoluteUrl, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+import { getPostsByLang, postUrl, readingTime } from '../lib/blog';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const b = c.blog; const path = route('blog', lang);
+const posts = await getPostsByLang(lang);
+const featured = posts[0];
+const rest = posts.slice(1);
+const cats = Array.from(new Set(posts.map((p) => p.data.category).filter(Boolean)));
+const fmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+const schema = [{ '@type': 'Blog', '@id': absoluteUrl(path) + '#blog', url: absoluteUrl(path), name: b.title, description: b.metaDescription,
+  blogPost: posts.slice(0, 12).map((p) => ({ '@type': 'BlogPosting', headline: p.data.title, url: absoluteUrl(postUrl(p)), datePublished: p.data.pubDate.toISOString() })) }];
+---
+<Base lang={lang} title={b.metaTitle} description={b.metaDescription} path={path} alternates={alternatesFor('blog')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: b.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{b.title}</h1><p class="lede">{b.lede}</p></div>
+      {cats.length > 1 && (
+        <div class="cats reveal">
+          <button class="cat is-on" type="button" data-cat="">Todos</button>
+          {cats.map((k) => (<button class="cat" type="button" data-cat={k}>{k}</button>))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  {featured && (
+    <section class="section section--tight">
+      <div class="container">
+        <a class="feat reveal" href={postUrl(featured)}>
+          <div class="feat__body">
+            <p class="feat__meta">{featured.data.category} · {fmt.format(featured.data.pubDate)} · {readingTime(featured.body)} {b.readingTime}</p>
+            <h2 class="feat__t">{featured.data.title}</h2>
+            <p class="feat__d">{featured.data.description}</p>
+            <span class="card__more">Ler análise completa →</span>
+          </div>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--mist">
+    <div class="container">
+      <div class="grid grid--3" id="post-grid">
+        {rest.map((p) => (
+          <a class="card reveal" href={postUrl(p)} data-cat={p.data.category}>
+            <p class="card__num">{p.data.category} · {fmt.format(p.data.pubDate)}</p>
+            <p class="card__title">{p.data.title}</p>
+            <p class="card__text">{p.data.description}</p>
+            <p class="card__more">{readingTime(p.body)} {b.readingTime} →</p>
+          </a>
+        ))}
+      </div>
+      {posts.length === 0 && <p class="lede center">Novos conteúdos em breve.</p>}
+    </div>
+  </section>
+
+  <section class="section section--ink center">
+    <div class="container">
+      <h2 class="reveal">Do conteúdo à decisão</h2>
+      <p class="lede reveal" style="margin-inline:auto">Ler ajuda a entender o terreno. Decidir exige olhar o seu caso concreto.</p>
+      <p class="mt-3 reveal"><a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .cats { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1.6rem; }
+  .cat { font: inherit; font-size: .82rem; padding: .4rem .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--white); color: var(--muted); cursor: pointer; }
+  .cat.is-on, .cat:hover { border-color: var(--gold); color: var(--ink); background: var(--mist); }
+  .feat { display: block; text-decoration: none; border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: var(--radius); background: var(--white); padding: clamp(1.6rem, 4vw, 2.6rem); box-shadow: var(--shadow-soft); transition: .18s ease; }
+  .feat:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .feat__meta { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .feat__t { font-family: var(--serif); font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.4rem); color: var(--ink); margin: .6rem 0; max-width: 26ch; }
+  .feat__d { color: var(--muted); max-width: 62ch; margin-bottom: 1rem; }
+</style>
+<script is:inline>
+  (function () {
+    var btns = document.querySelectorAll('.cat'); if (!btns.length) return;
+    btns.forEach(function (b) { b.addEventListener('click', function () {
+      btns.forEach(function (x) { x.classList.remove('is-on'); }); b.classList.add('is-on');
+      var k = b.dataset.cat;
+      document.querySelectorAll('#post-grid [data-cat]').forEach(function (c) {
+        c.style.display = (!k || c.dataset.cat === k) ? '' : 'none';
+      });
+    }); });
+  })();
+</script>

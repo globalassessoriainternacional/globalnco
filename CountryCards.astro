@@ -1,0 +1,45 @@
+---
+import { absoluteUrl, type Lang } from '../config/site';
+import { route } from '../i18n/routes';
+import { ui } from '../i18n/ui';
+
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  lang: Lang;
+  items: Crumb[];
+}
+const { lang, items } = Astro.props;
+const t = ui[lang];
+
+const all: Crumb[] = [{ label: t.breadcrumbHome, href: route('home', lang) }, ...items];
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: all.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.label,
+    ...(item.href ? { item: absoluteUrl(item.href) } : {}),
+  })),
+});
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    {all.map((item, i) => (
+      <li>
+        {item.href && i < all.length - 1 ? (
+          <a href={item.href}>{item.label}</a>
+        ) : (
+          <span aria-current="page">{item.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={jsonLd} />

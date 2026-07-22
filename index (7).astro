@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import { ui } from '../i18n/ui';
+
+const t = ui.pt;
+---
+
+<Base lang="pt" title="404 — Global & Co." description={t.notFound.text} noindex={true} path="/404/">
+  <section class="section center">
+    <div class="container">
+      <p class="eyebrow" style="justify-content:center">404</p>
+      <h1>{t.notFound.title}</h1>
+      <p class="lede" style="margin-inline:auto">{t.notFound.text}</p>
+      <p class="mt-3 notfound-links">
+        <a class="btn btn--gold" href="/">{t.notFound.back}</a>
+        <a class="btn btn--ghost" href="/es/">Inicio (ES)</a>
+        <a class="btn btn--ghost" href="/en/">Home (EN)</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound-links {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>

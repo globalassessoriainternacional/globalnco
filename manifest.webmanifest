@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CountryCards from '../components/CountryCards.astro';
+import { absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const a = c.about; const path = route('about', lang);
+const schema = [{ '@type': 'AboutPage', '@id': absoluteUrl(path) + '#webpage', url: absoluteUrl(path), name: a.metaTitle, description: a.metaDescription, mainEntity: { '@id': `${SITE_URL}/#organization` } }];
+---
+<Base lang={lang} title={a.metaTitle} description={a.metaDescription} path={path} alternates={alternatesFor('about')} schema={schema}>
+  <section class="section section--tight ab-hero">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: a.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{a.title}</h1><p class="lede">{a.lede}</p></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container prose reveal">{a.story.map((p) => <p>{p}</p>)}</div>
+  </section>
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-head reveal"><p class="eyebrow eyebrow--light">{a.principles.eyebrow}</p><h2>{a.principles.title}</h2></div>
+      <div class="grid grid--2 pr">{a.principles.items.map((i) => (<div class="pr__i reveal"><p class="pr__t">{i.t}</p><p class="pr__d">{i.d}</p></div>))}</div>
+    </div>
+  </section>
+  <section class="section section--mist">
+    <div class="container">
+      <div class="section-head reveal"><p class="eyebrow">{a.coverage.eyebrow}</p><h2>{a.coverage.title}</h2><p class="lede">{a.coverage.text}</p></div>
+      <div class="grid grid--3">{a.coverage.items.map((i) => (<div class="card reveal"><p class="card__title">{i.t}</p><p class="card__text">{i.d}</p></div>))}</div>
+      <div class="mt-3"><CountryCards lang={lang} /></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container tr reveal"><h2 class="h-sub">{a.transparency.title}</h2><p class="lede">{a.transparency.text}</p></div>
+  </section>
+  <section class="section section--ink center">
+    <div class="container">
+      <h2 class="reveal">{a.cta.title}</h2><p class="lede reveal" style="margin-inline:auto">{a.cta.text}</p>
+      <p class="mt-3 reveal"><a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .ab-hero { background: radial-gradient(ellipse 80% 100% at 0% 0%, rgba(211,172,43,.10), transparent 60%), var(--white); }
+  .prose { max-width: 74ch; }
+  .prose p { margin-bottom: 1.1rem; font-size: 1.03rem; }
+  .pr__i { border-left: 2px solid var(--gold); padding-left: 1.1rem; }
+  .pr__t { font-family: var(--serif); font-size: 1.25rem; color: #fff; }
+  .pr__d { color: rgba(255,255,255,.68); font-size: .9rem; margin-top: .2rem; }
+  .tr { max-width: 800px; border-left: 3px solid var(--gold); padding-left: 1.6rem; }
+  .h-sub { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem); }
+</style>

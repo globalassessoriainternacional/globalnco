@@ -1,0 +1,253 @@
+---
+import '@fontsource/poppins/300.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/700.css';
+import '@fontsource/cormorant-garamond/500-italic.css';
+import poppins400 from '@fontsource/poppins/files/poppins-latin-400-normal.woff2?url';
+import cormorant600 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff2?url';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ConsentBanner from '../components/ConsentBanner.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import {
+  SITE_URL, GA_ID, GTM_ID, BRAND, BRAND_BY_LANG, LOCALE_TAGS, OG_LOCALES,
+  absoluteUrl, LANGS, type Lang,
+} from '../config/site';
+import { ROUTES, route } from '../i18n/routes';
+import { content } from '../data';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  path?: string;
+  alternates?: Partial<Record<Lang, string>>;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  schema?: object[];
+  article?: { publishedTime: string; modifiedTime?: string; author?: string; tags?: string[] };
+}
+
+const {
+  lang, title, description, path, alternates,
+  ogImage = '/og/og-pt.png', ogType = 'website', noindex = false, schema = [], article,
+} = Astro.props;
+
+const c = content[lang];
+const brand = BRAND_BY_LANG[lang];
+const canonicalPath = path ?? Astro.url.pathname;
+const canonical = absoluteUrl(
+  canonicalPath.endsWith('/') || canonicalPath.includes('.') ? canonicalPath : canonicalPath + '/'
+);
+const ogImageAbs = absoluteUrl(ogImage);
+const orgId = `${SITE_URL}/#organization`;
+
+/* Só emite hreflang para idiomas efetivamente construídos */
+const activeAlternates = alternates
+  ? (Object.entries(alternates).filter(([l]) => LANGS.includes(l as Lang)) as [Lang, string][])
+  : [];
+
+/* ---------- JSON-LD base: Organization + WebSite ---------- */
+const sameAs = LANGS.map((l) => BRAND_BY_LANG[l].instagram);
+
+const org: Record<string, any> = {
+  '@type': ['Organization', 'ProfessionalService'],
+  '@id': orgId,
+  name: BRAND.name,
+  alternateName: ['Pense Global', 'Piensa Global', 'Global & Co'],
+  url: SITE_URL + '/',
+  logo: { '@type': 'ImageObject', url: absoluteUrl('/icons/icon-512.png'), width: 512, height: 512 },
+  image: ogImageAbs,
+  slogan: brand.tagline,
+  description: c.home.metaDescription,
+  email: BRAND.emails.contact,
+  telephone: '+' + BRAND.whatsappNumber,
+  areaServed: [
+    { '@type': 'Country', name: 'Uruguay' },
+    { '@type': 'Country', name: 'Chile' },
+    { '@type': 'Country', name: 'Paraguay' },
+    { '@type': 'Country', name: 'Brazil' },
+  ],
+  availableLanguage: ['Portuguese', 'Spanish', 'English'],
+  knowsAbout: [
+    'Residency and immigration in Uruguay, Chile and Paraguay',
+    'International tax residency',
+    'International tax planning',
+    'Wealth protection and holding structures',
+    'International succession and inheritance',
+    'Company formation and branches',
+    'International banking',
+    'Degree recognition and driving licence conversion',
+  ],
+  sameAs,
+  contactPoint: [
+    { '@type': 'ContactPoint', contactType: 'customer service', email: BRAND.emails.contact, telephone: '+' + BRAND.whatsappNumber, availableLanguage: ['pt', 'es', 'en'] },
+    { '@type': 'ContactPoint', contactType: 'legal', email: BRAND.emails.legal },
+    { '@type': 'ContactPoint', contactType: 'billing support', email: BRAND.emails.finance },
+    { '@type': 'ContactPoint', contactType: 'technical support', email: BRAND.emails.support },
+    { '@type': 'ContactPoint', contactType: 'sales', email: BRAND.emails.partnerships },
+  ],
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: BRAND.hours.from,
+    closes: BRAND.hours.to,
+  },
+};
+if (BRAND.registry.show && BRAND.registry.legalEntity) {
+  org.legalName = BRAND.registry.legalEntity;
+  if (BRAND.registry.number) org.taxID = BRAND.registry.number;
+  if (BRAND.registry.address) {
+    org.address = { '@type': 'PostalAddress', streetAddress: BRAND.registry.address };
+  }
+}
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  url: SITE_URL + '/',
+  name: BRAND.name,
+  publisher: { '@id': orgId },
+  inLanguage: LOCALE_TAGS[lang],
+};
+
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, website, ...schema] });
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={BRAND.name} />
+    {noindex
+      ? <meta name="robots" content="noindex, nofollow" />
+      : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
+    <link rel="canonical" href={canonical} />
+
+    {activeAlternates.map(([l, p]) => (
+      <link rel="alternate" hreflang={LOCALE_TAGS[l]} href={absoluteUrl(p)} />
+    ))}
+    {activeAlternates.length > 1 && alternates?.pt && (
+      <link rel="alternate" hreflang="x-default" href={absoluteUrl(alternates.pt)} />
+    )}
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#181047" />
+
+    <link rel="preload" href={cormorant600} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={poppins400} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={BRAND.name} />
+    <meta property="og:locale" content={OG_LOCALES[lang]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={BRAND.name + ' — ' + brand.tagline} />
+    {article?.publishedTime && <meta property="article:published_time" content={article.publishedTime} />}
+    {article?.modifiedTime && <meta property="article:modified_time" content={article.modifiedTime} />}
+    {article?.tags?.map((t) => <meta property="article:tag" content={t} />)}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <link rel="alternate" type="application/rss+xml" title={BRAND.name} href={lang === 'pt' ? '/rss.xml' : `/${lang}/rss.xml`} />
+
+    <script type="application/ld+json" set:html={jsonLd} />
+
+    {GTM_ID && (
+      <script is:inline define:vars={{ GTM_ID }}>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+        j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})
+        (window,document,'script','dataLayer',GTM_ID);
+      </script>
+    )}
+
+    {GA_ID && (
+      <script is:inline define:vars={{ GA_ID }}>
+        (function () {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          window.gtag = gtag;
+          gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+          function loadGA() {
+            if (window.__gaLoaded) return; window.__gaLoaded = true;
+            gtag('consent', 'update', { analytics_storage: 'granted' });
+            var s = document.createElement('script'); s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+            document.head.appendChild(s);
+            gtag('js', new Date()); gtag('config', GA_ID, { anonymize_ip: true });
+          }
+          window.__loadGA = loadGA;
+          if (localStorage.getItem('gc-consent') === 'granted') loadGA();
+        })();
+      </script>
+    )}
+
+    {/* Atribuição de origem — preserva UTM/gclid do primeiro acesso para o CRM */}
+    <script is:inline>
+      (function () {
+        try {
+          var K = 'gc_attr';
+          var cur = JSON.parse(localStorage.getItem(K) || 'null');
+          var p = new URLSearchParams(location.search);
+          var keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+          var has = keys.some(function (k) { return p.get(k); });
+          if (!cur || has) {
+            var data = cur || {};
+            keys.forEach(function (k) { if (p.get(k)) data[k] = p.get(k); });
+            if (!data.primeiro_acesso) data.primeiro_acesso = new Date().toISOString();
+            if (!data.referrer) data.referrer = document.referrer || 'direto';
+            data.dispositivo = /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop';
+            localStorage.setItem(K, JSON.stringify(data));
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    {GTM_ID && (
+      <noscript set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`} />
+    )}
+
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <Header lang={lang} alternates={alternates} />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <WhatsAppFloat lang={lang} />
+    <ConsentBanner lang={lang} />
+
+    <script is:inline>
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('is-visible'); }); return; }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        els.forEach(function (el) { io.observe(el); });
+      })();
+    </script>
+  </body>
+</html>
