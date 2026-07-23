@@ -1,7 +1,17 @@
-import type { APIRoute } from 'astro';
-// Feed desativado enquanto o idioma não estiver publicado.
-export const GET: APIRoute = () =>
-  new Response(
-    '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Global &amp; Co.</title><link>https://globalnco.com/</link><description>Feed indisponível neste idioma.</description></channel></rss>',
-    { headers: { 'Content-Type': 'application/xml; charset=utf-8' } }
-  );
+import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
+import { getPostsByLang, postUrl } from '../../lib/blog';
+import { content } from '../../data';
+export async function GET(context: APIContext) {
+  const posts = await getPostsByLang('es');
+  return rss({
+    title: content.es.blog.metaTitle,
+    description: content.es.blog.metaDescription,
+    site: context.site?.toString() ?? 'https://globalnco.com',
+    items: posts.map((p) => ({
+      title: p.data.title, description: p.data.description,
+      pubDate: p.data.pubDate, link: postUrl(p),
+    })),
+    customData: `<language>es</language>`,
+  });
+}

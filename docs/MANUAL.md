@@ -221,3 +221,31 @@ SEO on-page (títulos, descriptions, headings, URLs), SEO técnico (canonical, s
 - [ ] Google Business Profile criado (área de serviço, sem endereço)
 - [ ] Teste no celular: navegação, WhatsApp, seletor de idiomas
 - [ ] Rich Results Test em 1 página de serviço e 1 artigo
+
+---
+
+## PARTE 6 — Site trilíngue (PT · ES · EN)
+
+O site está **completo nos três idiomas**. Todas as páginas institucionais — home, países, comparativo, 11 serviços, método, sobre, FAQ, contato, diagnóstico e páginas legais — existem em português, espanhol e inglês, com `hreflang` recíproco, `x-default` apontando para o português e seletor de idioma no cabeçalho.
+
+**Onde mora cada idioma:**
+
+| Idioma | Conteúdo | Páginas |
+|---|---|---|
+| Português | `src/data/pt/` | `src/pages/` |
+| Espanhol | `src/data/es/` | `src/pages/es/` |
+| Inglês | `src/data/en/` | `src/pages/en/` |
+
+Os textos de interface (botões, rótulos, rodapé, avisos) ficam centralizados em `src/i18n/ui.ts`, nos três idiomas. Os endereços de cada página, por idioma, ficam em `src/i18n/routes.ts`.
+
+**Blog por idioma.** Cada idioma tem a sua pasta de artigos:
+
+- `src/content/blog/pt/` — 10 artigos
+- `src/content/blog/es/` — 2 artigos
+- `src/content/blog/en/` — 2 artigos
+
+Para ligar as três versões do mesmo artigo (e gerar `hreflang` entre elas), use o **mesmo `translationKey`** no cabeçalho dos três arquivos. Um artigo sem tradução aparece apenas no seu idioma — é o comportamento correto e não gera erro.
+
+**Regra estratégica do blog multilíngue:** não traduza ao pé da letra. Um artigo como "Saída fiscal do Brasil" não faz sentido para um leitor de inglês. Cada idioma cresce com conteúdo adaptado ao seu público — hispano local no espanhol, expatriado internacional no inglês. O português continua sendo o mercado principal e o mais completo.
+
+**Para desativar um idioma** (se algum dia quiser): em `src/config/site.ts`, remova-o de `LANGS`. O seletor, o `hreflang` e o sitemap se ajustam sozinhos.

@@ -6,6 +6,7 @@ import ServiceGrid from '../components/ServiceGrid.astro';
 import MethodSteps from '../components/MethodSteps.astro';
 import Proof from '../components/Proof.astro';
 import { waLink, absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, alternatesFor, ALL_SERVICES } from '../i18n/routes';
 import { content } from '../data';
 import { getPostsByLang, postUrl } from '../lib/blog';
@@ -44,7 +45,7 @@ const schema = [
     image="/img/hero-home.jpg"
     badges={c.home.hero.badges}
   >
-    <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
+    <a class="btn btn--gold" href={route('diagnostic', lang)}>{ui[lang].diagnostic}</a>
     <a class="btn btn--ghost-light" href={route('compare', lang)}>Uruguai, Chile ou Paraguai?</a>
   </Hero>
 
@@ -98,7 +99,7 @@ const schema = [
         <p class="lede">{c.home.method.lede}</p>
       </div>
       <MethodSteps lang={lang} />
-      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('method', lang)}>Como trabalhamos em detalhe →</a></p>
+      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('method', lang)}>{ui[lang].methodDetail}</a></p>
     </div>
   </section>
 
@@ -164,7 +165,7 @@ const schema = [
               <p class="card__num">{p.data.category} · {fmt.format(p.data.pubDate)}</p>
               <p class="card__title">{p.data.title}</p>
               <p class="card__text">{p.data.description}</p>
-              <p class="card__more">Ler análise →</p>
+              <p class="card__more">{ui[lang].readAnalysis}</p>
             </a>
           ))}
         </div>
@@ -179,7 +180,7 @@ const schema = [
       <h2 id="h-cta" class="reveal">{c.home.cta.title}</h2>
       <p class="lede reveal" style="margin-inline:auto">{c.home.cta.text}</p>
       <p class="mt-3 reveal cta-final">
-        <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
+        <a class="btn btn--gold" href={route('diagnostic', lang)}>{ui[lang].diagnostic}</a>
         <a class="btn btn--ghost-light" href={waLink(lang)} rel="noopener" target="_blank">WhatsApp</a>
       </p>
       <p class="btn-note reveal">{c.home.cta.note}</p>

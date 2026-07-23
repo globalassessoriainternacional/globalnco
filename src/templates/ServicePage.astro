@@ -4,6 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import FaqList from '../components/FaqList.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { absoluteUrl, SITE_URL, waLink, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, alternatesFor, SERVICE_FAMILIES, type PageKey } from '../i18n/routes';
 import { content } from '../data';
 
@@ -36,10 +37,10 @@ const schema = [
         <h1>{s.title}</h1>
         <p class="lede">{s.lede}</p>
         <p class="svc-hero__cta">
-          <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
-          <a class="btn btn--ghost" href={waLink(lang)} rel="noopener" target="_blank">Falar no WhatsApp</a>
+          <a class="btn btn--gold" href={route('diagnostic', lang)}>{ui[lang].diagnostic}</a>
+          <a class="btn btn--ghost" href={waLink(lang)} rel="noopener" target="_blank">{ui[lang].whatsapp}</a>
         </p>
-        <p class="svc-hero__co">Disponível em: <strong>{s.countries.join(' · ')}</strong></p>
+        <p class="svc-hero__co">{ui[lang].availableIn} <strong>{s.countries.join(' · ')}</strong></p>
       </div>
     </div>
   </section>
@@ -91,7 +92,7 @@ const schema = [
 
   <section class="section section--mist">
     <div class="container faq-wrap">
-      <h2 class="center">Perguntas frequentes</h2>
+      <h2 class="center">{ui[lang].faq}</h2>
       <div class="mt-3"><FaqList items={s.faqs} /></div>
     </div>
   </section>
@@ -101,7 +102,7 @@ const schema = [
       <div class="section-head reveal"><h2>{s.cta.title}</h2><p class="lede">{s.cta.text}</p></div>
       <div class="lead-wrap"><LeadForm lang={lang} presetService={s.nav} /></div>
       <div class="mt-3 reveal">
-        <p class="eyebrow">Continue explorando</p>
+        <p class="eyebrow">{ui[lang].keepExploring}</p>
         <div class="grid grid--3 mt-2">
           {siblings.map((k) => (
             <a class="card" href={route(k, lang)}><p class="card__title">{c.services[k].nav}</p><p class="card__text">{c.services[k].excerpt}</p></a>

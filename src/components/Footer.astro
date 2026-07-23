@@ -1,5 +1,6 @@
 ---
 import { BRAND, BRAND_BY_LANG, waLink, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, SERVICE_FAMILIES, COUNTRY_KEYS } from '../i18n/routes';
 import { content } from '../data';
 
@@ -16,20 +17,20 @@ const reg = BRAND.registry;
     <div class="ft__grid">
       <div class="ft__brand">
         <p class="ft__logo"><strong>Global &amp; Co.</strong><span>{brand.tagline} · {brand.handle}</span></p>
-        <p class="ft__desc">Consultoria boutique que estrutura vida, patrimônio e negócios de famílias e empresários brasileiros no Uruguai, Chile e Paraguai — do diagnóstico à continuidade.</p>
+        <p class="ft__desc">{ui[lang].footerDesc}</p>
         <div class="ft__social">
           <a href={waLink(lang)} rel="noopener" target="_blank">WhatsApp</a>
           <a href={brand.instagram} rel="noopener" target="_blank">Instagram</a>
         </div>
       </div>
 
-      <nav aria-label="Países">
-        <p class="ft__ttl">Países</p>
+      <nav aria-label={ui[lang].footerCountries}>
+        <p class="ft__ttl">{ui[lang].footerCountries}</p>
         <ul>
           {COUNTRY_KEYS.map((k) => (
             <li><a href={route(k, lang)}>{c.countries[k.replace('country:', '')].name}</a></li>
           ))}
-          <li><a href={route('compare', lang)}>Comparativo</a></li>
+          <li><a href={route('compare', lang)}>{ui[lang].footerCompare}</a></li>
         </ul>
       </nav>
 
@@ -43,21 +44,21 @@ const reg = BRAND.registry;
       ))}
 
       <div>
-        <p class="ft__ttl">Contato</p>
+        <p class="ft__ttl">{ui[lang].footerContact}</p>
         <ul class="ft__contact">
           <li><a href={waLink(lang)} rel="noopener" target="_blank">{BRAND.whatsappDisplay}</a></li>
           <li><a href={'mailto:' + BRAND.emails.contact}>{BRAND.emails.contact}</a></li>
           <li><a href={'mailto:' + BRAND.emails.legal}>{BRAND.emails.legal}</a></li>
           <li><a href={'mailto:' + BRAND.emails.support}>{BRAND.emails.support}</a></li>
           <li><a href={'mailto:' + BRAND.emails.partnerships}>{BRAND.emails.partnerships}</a></li>
-          <li class="ft__hours">Seg–Sex · 9h às 18h (GMT-3)</li>
+          <li class="ft__hours">{ui[lang].hours}</li>
         </ul>
-        <p class="ft__ttl ft__ttl--sp">Institucional</p>
+        <p class="ft__ttl ft__ttl--sp">{ui[lang].footerInstitutional}</p>
         <ul>
-          <li><a href={route('method', lang)}>Como trabalhamos</a></li>
-          <li><a href={route('about', lang)}>Sobre</a></li>
-          <li><a href={route('faq', lang)}>Perguntas frequentes</a></li>
-          <li><a href={route('diagnostic', lang)}>Diagnóstico</a></li>
+          <li><a href={route('method', lang)}>{ui[lang].nav.method}</a></li>
+          <li><a href={route('about', lang)}>{ui[lang].nav.about}</a></li>
+          <li><a href={route('faq', lang)}>{ui[lang].faq}</a></li>
+          <li><a href={route('diagnostic', lang)}>{ui[lang].nav.diagnostic}</a></li>
           <li><a href={route('privacy', lang)}>{c.common.legalNav.privacy}</a></li>
           <li><a href={route('terms', lang)}>{c.common.legalNav.terms}</a></li>
         </ul>
@@ -73,10 +74,10 @@ const reg = BRAND.registry;
         </p>
       )}
       <p class="ft__disc">
-        A Global &amp; Co. é uma consultoria privada. Não representa nem possui vínculo com o Estado uruguaio, chileno, paraguaio ou brasileiro, nem com qualquer de suas instituições públicas.
+        {ui[lang].disclaimer1}
       </p>
       <p class="ft__disc">
-        Este site tem caráter informativo e não constitui aconselhamento jurídico, fiscal, contábil ou de investimento. Cada estrutura é avaliada caso a caso, à luz da legislação vigente.
+        {ui[lang].disclaimer2}
       </p>
       <p class="ft__copy">© {year} {BRAND.legalName} · Todos os direitos reservados.</p>
     </div>

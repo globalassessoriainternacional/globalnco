@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, alternatesFor } from '../i18n/routes';
 import { content } from '../data';
 import { getPostsByLang, postUrl } from '../lib/blog';
@@ -21,7 +22,7 @@ const posts = (await getPostsByLang(lang)).slice(0, 3);
   {posts.length > 0 && (
     <section class="section section--mist">
       <div class="container">
-        <div class="section-head center"><h2>Enquanto isso</h2></div>
+        <div class="section-head center"><h2>{ui[lang].meanwhile}</h2></div>
         <div class="grid grid--3">
           {posts.map((p) => (<a class="card" href={postUrl(p)}><p class="card__title">{p.data.title}</p><p class="card__text">{p.data.description}</p></a>))}
         </div>

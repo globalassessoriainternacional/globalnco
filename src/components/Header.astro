@@ -1,5 +1,6 @@
 ---
 import { BRAND_BY_LANG, waLink, LANGS, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, SERVICE_FAMILIES, COUNTRY_KEYS } from '../i18n/routes';
 import { content } from '../data';
 import LangSwitcher from './LangSwitcher.astro';
@@ -29,7 +30,7 @@ const isActive = (href: string) => (href === '/' ? current === href : current.st
 
       <ul id="nav-list" class="nav__list">
         <li class="has-sub">
-          <button type="button" class="sub__btn" aria-expanded="false">Países</button>
+          <button type="button" class="sub__btn" aria-expanded="false">{ui[lang].nav.countries}</button>
           <div class="sub sub--countries">
             <div class="sub__grid">
               {COUNTRY_KEYS.map((k) => {
@@ -51,7 +52,7 @@ const isActive = (href: string) => (href === '/' ? current === href : current.st
         </li>
 
         <li class="has-sub">
-          <button type="button" class="sub__btn" aria-expanded="false">Serviços</button>
+          <button type="button" class="sub__btn" aria-expanded="false">{ui[lang].nav.services}</button>
           <div class="sub sub--services">
             <div class="sub__cols">
               {SERVICE_FAMILIES.map((f) => (
@@ -66,19 +67,19 @@ const isActive = (href: string) => (href === '/' ? current === href : current.st
               ))}
             </div>
             <a class="sub__feat" href={route('services', lang)}>
-              <strong>Ver todos os serviços</strong>
-              <span>Onze frentes, três famílias →</span>
+              <strong>{ui[lang].seeAllServices}</strong>
+              <span>{ui[lang].familiesTagline}</span>
             </a>
           </div>
         </li>
 
-        <li><a href={route('method', lang)} aria-current={isActive(route('method', lang)) ? 'page' : undefined}>Como trabalhamos</a></li>
-        <li><a href={route('blog', lang)} aria-current={isActive(route('blog', lang)) ? 'page' : undefined}>Conhecimento</a></li>
-        <li><a href={route('about', lang)} aria-current={isActive(route('about', lang)) ? 'page' : undefined}>Sobre</a></li>
-        <li><a href={route('contact', lang)} aria-current={isActive(route('contact', lang)) ? 'page' : undefined}>Contato</a></li>
+        <li><a href={route('method', lang)} aria-current={isActive(route('method', lang)) ? 'page' : undefined}>{ui[lang].nav.method}</a></li>
+        <li><a href={route('blog', lang)} aria-current={isActive(route('blog', lang)) ? 'page' : undefined}>{ui[lang].nav.insights}</a></li>
+        <li><a href={route('about', lang)} aria-current={isActive(route('about', lang)) ? 'page' : undefined}>{ui[lang].nav.about}</a></li>
+        <li><a href={route('contact', lang)} aria-current={isActive(route('contact', lang)) ? 'page' : undefined}>{ui[lang].nav.contact}</a></li>
 
         {LANGS.length > 1 && <li class="nav__lang"><LangSwitcher lang={lang} alternates={alternates} /></li>}
-        <li class="nav__cta"><a class="btn btn--gold btn--sm" href={route('diagnostic', lang)}>Diagnóstico</a></li>
+        <li class="nav__cta"><a class="btn btn--gold btn--sm" href={route('diagnostic', lang)}>{ui[lang].nav.diagnostic}</a></li>
       </ul>
     </nav>
   </div>

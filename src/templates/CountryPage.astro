@@ -6,6 +6,7 @@ import FaqList from '../components/FaqList.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { absoluteUrl, SITE_URL, waLink, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route, alternatesFor, type PageKey } from '../i18n/routes';
 import { content } from '../data';
 
@@ -23,9 +24,9 @@ const schema = [
 ];
 ---
 <Base lang={lang} title={co.metaTitle} description={co.metaDescription} path={path} alternates={alternatesFor(countryKey)} ogImage={img} schema={schema}>
-  <Hero eyebrow="Onde atuamos" title={co.name} accent={co.tagline} lede={co.lede} image={img} compact={false}>
-    <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
-    <a class="btn btn--ghost-light" href={waLink(lang, key)} rel="noopener" target="_blank">Falar sobre {co.name}</a>
+  <Hero eyebrow={ui[lang].whereOperate} title={co.name} accent={co.tagline} lede={co.lede} image={img} compact={false}>
+    <a class="btn btn--gold" href={route('diagnostic', lang)}>{ui[lang].diagnostic}</a>
+    <a class="btn btn--ghost-light" href={waLink(lang, key)} rel="noopener" target="_blank">{ui[lang].talkAbout} {co.name}</a>
   </Hero>
 
   <div class="container bc-wrap"><Breadcrumbs lang={lang} items={[{ label: c.countriesIndex.breadcrumb, href: route('countries', lang) }, { label: co.name }]} /></div>
@@ -40,7 +41,7 @@ const schema = [
 
   <section class="section section--ink">
     <div class="container">
-      <div class="section-head reveal"><p class="eyebrow eyebrow--light">Indicadores</p><h2>O que os dados mostram</h2></div>
+      <div class="section-head reveal"><p class="eyebrow eyebrow--light">{ui[lang].indicators}</p><h2>{ui[lang].dataShow}</h2></div>
       <div class="ind">
         {co.indicators.map((i) => (
           <div class="ind__i reveal"><strong>{i.value}</strong><span>{i.label}</span><em>{i.source}</em></div>
@@ -72,7 +73,7 @@ const schema = [
 
   <section class="section section--mist">
     <div class="container faq-wrap">
-      <h2 class="center">Perguntas frequentes sobre o {co.name}</h2>
+      <h2 class="center">{ui[lang].faqAbout} {co.name}</h2>
       <div class="mt-3"><FaqList items={co.faqs} /></div>
     </div>
   </section>
@@ -81,7 +82,7 @@ const schema = [
     <div class="container">
       <div class="section-head reveal"><h2>{co.cta.title}</h2><p class="lede">{co.cta.text}</p></div>
       <div class="lead-wrap"><LeadForm lang={lang} presetCountry={key} /></div>
-      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('compare', lang)}>Comparar com os outros países →</a></p>
+      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('compare', lang)}>{ui[lang].compareOthers}</a></p>
     </div>
   </section>
 </Base>

@@ -33,10 +33,10 @@ export default defineConfig({
       // Exclui páginas não indexáveis e os idiomas ainda não publicados (ES/EN redirecionam).
       filter: (page) =>
         !page.includes('/obrigado') &&
+        !page.includes('/gracias') &&
+        !page.includes('/thank-you') &&
         !page.includes('/404') &&
-        !page.includes('/es/') &&
-        !page.includes('/en/') &&
-        !/\/(es|en)$/.test(page.replace(/\/$/, '')),
+        !page.includes('/en/blog'),
       serialize: (item) => ({ ...item, ...seoWeight(item.url), lastmod: new Date().toISOString() }),
     }),
   ],

@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { absoluteUrl, SITE_URL, waLink, type Lang } from '../config/site';
+import { ui } from '../i18n/ui';
 import { route } from '../i18n/routes';
 import { content } from '../data';
 import { render } from 'astro:content';
@@ -51,7 +52,7 @@ const schema = [
       <div class="art__body">
         {toc.length > 2 && (
           <nav class="toc" aria-label="Sumário">
-            <p class="toc__t">Neste artigo</p>
+            <p class="toc__t">{ui[lang].inThisArticle}</p>
             <ul>{toc.map((h) => (<li><a href={'#' + h.slug}>{h.text}</a></li>))}</ul>
           </nav>
         )}
@@ -63,11 +64,11 @@ const schema = [
       )}
 
       <aside class="art__cta">
-        <p class="art__ctat">Este conteúdo descreve o cenário. A decisão é sua — e é individual.</p>
-        <p class="art__ctad">Cada estrutura depende do seu patrimônio, da sua família e dos seus objetivos. O diagnóstico avalia o seu caso concreto antes de qualquer recomendação.</p>
+        <p class="art__ctat">{ui[lang].postCtaTitle}</p>
+        <p class="art__ctad">{ui[lang].postCtaText}</p>
         <p class="art__ctab">
-          <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
-          <a class="btn btn--ghost" href={waLink(lang)} rel="noopener" target="_blank">Falar no WhatsApp</a>
+          <a class="btn btn--gold" href={route('diagnostic', lang)}>{ui[lang].diagnostic}</a>
+          <a class="btn btn--ghost" href={waLink(lang)} rel="noopener" target="_blank">{ui[lang].whatsapp}</a>
         </p>
       </aside>
     </div>

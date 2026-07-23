@@ -107,7 +107,7 @@ export type Lang = 'pt' | 'es' | 'en';
  * PT completo. Para ativar ES/EN: crie src/data/es|en espelhando src/data/pt
  * e mude para ['pt', 'es', 'en'] — hreflang, seletor e sitemap se ajustam sozinhos.
  */
-export const LANGS: Lang[] = ['pt'];
+export const LANGS: Lang[] = ['pt', 'es', 'en'];
 
 export const LOCALE_TAGS: Record<Lang, string> = { pt: 'pt-BR', es: 'es', en: 'en' };
 export const OG_LOCALES: Record<Lang, string> = { pt: 'pt_BR', es: 'es_ES', en: 'en_US' };
