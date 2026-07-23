@@ -48,7 +48,7 @@ export const legal = {
       },
       {
         h: '8. Seus direitos',
-        p: 'Você pode solicitar, a qualquer momento: confirmação de tratamento, acesso, correção, anonimização, portabilidade, eliminação de dados tratados com consentimento, informação sobre compartilhamentos e revisão de decisões automatizadas (não utilizamos decisões automatizadas). Para exercer seus direitos, escreva para contato@globalnco.com.',
+        p: 'Você pode solicitar, a qualquer momento: confirmação de tratamento, acesso, correção, anonimização, portabilidade, eliminação de dados tratados com consentimento, informação sobre compartilhamentos e revisão de decisões automatizadas (não utilizamos decisões automatizadas). Para exercer seus direitos, escreva para contact@globalnco.com.',
       },
       {
         h: '9. Segurança',
@@ -56,7 +56,7 @@ export const legal = {
       },
       {
         h: '10. Contato e atualizações',
-        p: 'Dúvidas ou solicitações sobre privacidade: contato@globalnco.com. Esta política pode ser atualizada periodicamente; a versão vigente estará sempre nesta página, com a data de atualização indicada no topo.',
+        p: 'Dúvidas ou solicitações sobre privacidade: contact@globalnco.com. Esta política pode ser atualizada periodicamente; a versão vigente estará sempre nesta página, com a data de atualização indicada no topo.',
       },
     ],
   },
@@ -99,7 +99,7 @@ export const legal = {
       },
       {
         h: '8. Contato',
-        p: 'Dúvidas sobre estes Termos: contato@globalnco.com.',
+        p: 'Dúvidas sobre estes Termos: contact@globalnco.com.',
       },
     ],
   }
