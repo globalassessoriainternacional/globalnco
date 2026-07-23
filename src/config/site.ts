@@ -35,10 +35,10 @@ export const META_PIXEL_ID = '';
  * Enquanto vazio, o formulário exibe os canais diretos (WhatsApp/e-mail)
  * e nenhum campo é perdido — o site não quebra.
  */
-export const FORM_ENDPOINT = '';
+export const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
 /** Chave de acesso do Web3Forms (só se usar Web3Forms). */
-export const WEB3FORMS_KEY = '';
+export const WEB3FORMS_KEY = '3882bdf1-3c00-46f7-903f-6cf7eac7d95f';
 
 /**
  * Campos capturados automaticamente em TODO envio de formulário.
