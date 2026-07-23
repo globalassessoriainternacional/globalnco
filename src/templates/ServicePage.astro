@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FaqList from '../components/FaqList.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, SITE_URL, waLink, type Lang } from '../config/site';
+import { route, alternatesFor, SERVICE_FAMILIES, type PageKey } from '../i18n/routes';
+import { content } from '../data';
+
+interface Props { lang: Lang; serviceKey: PageKey }
+const { lang, serviceKey } = Astro.props;
+const c = content[lang];
+const s = c.services[serviceKey];
+const path = route(serviceKey, lang);
+const fam = SERVICE_FAMILIES.find((f) => f.services.includes(serviceKey))!;
+const siblings = fam.services.filter((k) => k !== serviceKey);
+
+const schema = [
+  {
+    '@type': 'Service', '@id': absoluteUrl(path) + '#service',
+    name: s.title, description: s.metaDescription, url: absoluteUrl(path),
+    provider: { '@id': `${SITE_URL}/#organization` },
+    serviceType: s.nav,
+    areaServed: s.countries.map((n) => ({ '@type': 'Country', name: n })),
+    audience: { '@type': 'Audience', audienceType: s.forWho.items.join('; ') },
+  },
+  { '@type': 'FAQPage', mainEntity: s.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+---
+<Base lang={lang} title={s.metaTitle} description={s.metaDescription} path={path} alternates={alternatesFor(serviceKey)} schema={schema}>
+  <section class="section section--tight svc-hero">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: c.servicesIndex.breadcrumb, href: route('services', lang) }, { label: s.nav }]} />
+      <div class="section-head mt-2">
+        <p class="eyebrow">{c.common.serviceFamilies[fam.key].name}</p>
+        <h1>{s.title}</h1>
+        <p class="lede">{s.lede}</p>
+        <p class="svc-hero__cta">
+          <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
+          <a class="btn btn--ghost" href={waLink(lang)} rel="noopener" target="_blank">Falar no WhatsApp</a>
+        </p>
+        <p class="svc-hero__co">Disponível em: <strong>{s.countries.join(' · ')}</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container split2">
+      <div class="reveal">
+        <h2 class="h-sub">{s.forWho.title}</h2>
+        <ul class="check-list mt-2">{s.forWho.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
+      <div class="reveal fit">
+        <h2 class="h-sub">{s.fit.title}</h2>
+        <p class="fit__lbl fit__lbl--yes">Faz sentido quando</p>
+        <ul class="check-list">{s.fit.yes.map((i) => <li>{i}</li>)}</ul>
+        <p class="fit__lbl fit__lbl--no">Não faz sentido quando</p>
+        <ul class="x-list">{s.fit.no.map((i) => <li>{i}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>{s.deliver.title}</h2></div>
+      <div class="grid grid--2">
+        {s.deliver.items.map((d) => (<div class="card reveal"><p class="card__title">{d.t}</p><p class="card__text">{d.d}</p></div>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-head reveal"><h2>{s.process.title}</h2><p class="lede">{s.process.note}</p></div>
+      <div class="grid grid--2 proc">
+        {s.process.items.map((p) => (<div class="proc__i reveal"><p class="proc__t">{p.t}</p><p class="proc__d">{p.d}</p></div>))}
+      </div>
+      <div class="inc-box reveal">
+        <p class="inc-box__t">{s.included.title}</p>
+        <ul class="inc-box__l">{s.included.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container cont-box reveal">
+      <h2 class="h-sub">{s.continuity.title}</h2>
+      <p class="lede">{s.continuity.text}</p>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="container faq-wrap">
+      <h2 class="center">Perguntas frequentes</h2>
+      <div class="mt-3"><FaqList items={s.faqs} /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>{s.cta.title}</h2><p class="lede">{s.cta.text}</p></div>
+      <div class="lead-wrap"><LeadForm lang={lang} presetService={s.nav} /></div>
+      <div class="mt-3 reveal">
+        <p class="eyebrow">Continue explorando</p>
+        <div class="grid grid--3 mt-2">
+          {siblings.map((k) => (
+            <a class="card" href={route(k, lang)}><p class="card__title">{c.services[k].nav}</p><p class="card__text">{c.services[k].excerpt}</p></a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .svc-hero { background: radial-gradient(ellipse 90% 100% at 100% 0%, rgba(211,172,43,.10), transparent 55%), var(--white); }
+  .svc-hero__cta { margin-top: 1.4rem; display: flex; gap: .8rem; flex-wrap: wrap; }
+  .svc-hero__co { margin-top: 1rem; font-size: .85rem; color: var(--muted); }
+  .split2 { display: grid; gap: 2.4rem; }
+  @media (min-width: 880px) { .split2 { grid-template-columns: 1fr 1fr; } }
+  .h-sub { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem); }
+  .fit__lbl { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 1.2rem 0 .6rem; }
+  .fit__lbl--yes { color: #2f7a4f; }
+  .fit__lbl--no { color: #9b2c2c; }
+  .x-list { list-style: none; padding: 0; display: grid; gap: .7rem; }
+  .x-list li { position: relative; padding-left: 1.9rem; color: var(--muted); }
+  .x-list li::before { content: '×'; position: absolute; left: .35rem; top: -.05em; font-size: 1.25rem; color: #9b2c2c; font-weight: 700; }
+  .proc__i { border-left: 2px solid var(--gold); padding-left: 1.1rem; }
+  .proc__t { font-family: var(--serif); font-size: 1.28rem; color: #fff; }
+  .proc__d { color: rgba(255,255,255,.7); font-size: .9rem; margin-top: .2rem; }
+  .inc-box { margin-top: 2.4rem; padding: 1.4rem 1.6rem; border: 1px solid var(--line-light); border-radius: var(--radius); }
+  .inc-box__t { font-size: .74rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .8rem; }
+  .inc-box__l { list-style: none; padding: 0; display: grid; gap: .5rem; }
+  @media (min-width: 760px) { .inc-box__l { grid-template-columns: repeat(2, 1fr); } }
+  .inc-box__l li { position: relative; padding-left: 1.4rem; color: rgba(255,255,255,.8); font-size: .9rem; }
+  .inc-box__l li::before { content: '·'; position: absolute; left: .3rem; color: var(--gold); font-size: 1.6rem; line-height: .8; }
+  .cont-box { max-width: 780px; border-left: 3px solid var(--gold); padding-left: 1.6rem; }
+  .faq-wrap { max-width: 860px; }
+  .lead-wrap { max-width: 720px; }
+</style>

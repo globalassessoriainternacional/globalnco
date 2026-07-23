@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FaqList from '../components/FaqList.astro';
+import { absoluteUrl, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const f = c.faqPage; const path = route('faq', lang);
+const all = f.groups.flatMap((g) => g.faqs);
+const schema = [{ '@type': 'FAQPage', '@id': absoluteUrl(path) + '#faq', mainEntity: all.map((q) => ({ '@type': 'Question', name: q.q, acceptedAnswer: { '@type': 'Answer', text: q.a } })) }];
+---
+<Base lang={lang} title={f.metaTitle} description={f.metaDescription} path={path} alternates={alternatesFor('faq')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: f.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{f.title}</h1><p class="lede">{f.lede}</p></div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="container faq-wrap">
+      {f.groups.map((g) => (
+        <div class="fgrp reveal">
+          <h2 class="fgrp__t">{g.name}</h2>
+          <FaqList items={g.faqs} />
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="section section--ink center">
+    <div class="container">
+      <h2 class="reveal">{f.cta.title}</h2><p class="lede reveal" style="margin-inline:auto">{f.cta.text}</p>
+      <p class="mt-3 reveal"><a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .faq-wrap { max-width: 860px; }
+  .fgrp { margin-bottom: 2.6rem; }
+  .fgrp__t { font-size: 1.35rem; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--gold); }
+</style>

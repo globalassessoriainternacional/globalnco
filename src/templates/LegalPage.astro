@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang; kind: 'privacy' | 'terms' }
+const { lang, kind } = Astro.props;
+const c = content[lang]; const d = c[kind]; const path = route(kind, lang);
+---
+<Base lang={lang} title={d.metaTitle} description={kind === 'privacy' ? 'Como a Global & Co. coleta, usa, armazena e protege dados pessoais, em conformidade com a LGPD e o GDPR, e quais são os seus direitos como titular.' : 'Termos de uso do site da Global & Co.: natureza informativa do conteúdo, limites de responsabilidade, propriedade intelectual e condições de contato.'} path={path} alternates={alternatesFor(kind)}>
+  <section class="section section--tight">
+    <div class="container lg">
+      <Breadcrumbs lang={lang} items={[{ label: c.common.legalNav[kind] }]} />
+      <h1 class="mt-2">{d.title}</h1>
+      <p class="lg__up">{d.updated}</p>
+      <div class="lg__body">
+        {d.blocks.map((b) => (
+          <>
+            {b.h && <h2>{b.h}</h2>}
+            {b.p && <p set:html={b.p} />}
+            {b.ul && <ul>{b.ul.map((li) => <li set:html={li} />)}</ul>}
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .lg { max-width: 800px; }
+  .lg__up { font-size: .82rem; color: var(--muted); margin-top: .5rem; }
+  .lg__body { margin-top: 2rem; }
+  .lg__body h2 { font-size: 1.3rem; margin: 2.2rem 0 .8rem; }
+  .lg__body p { margin-bottom: 1rem; line-height: 1.75; }
+  .lg__body ul { margin: 0 0 1.3rem 1.3rem; display: grid; gap: .45rem; }
+  .lg__body a { color: var(--indigo); }
+</style>

@@ -1,0 +1,201 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CountryCards from '../components/CountryCards.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import MethodSteps from '../components/MethodSteps.astro';
+import Proof from '../components/Proof.astro';
+import { waLink, absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { route, alternatesFor, ALL_SERVICES } from '../i18n/routes';
+import { content } from '../data';
+import { getPostsByLang, postUrl } from '../lib/blog';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = content[lang];
+const posts = (await getPostsByLang(lang)).slice(0, 3);
+const fmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+const schema = [
+  {
+    '@type': 'ItemList',
+    name: c.home.services.title,
+    itemListElement: ALL_SERVICES.map((s, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      name: c.services[s].title, url: absoluteUrl(route(s, lang)),
+    })),
+  },
+];
+---
+
+<Base
+  lang={lang}
+  title={c.home.metaTitle}
+  description={c.home.metaDescription}
+  path={route('home', lang)}
+  alternates={alternatesFor('home')}
+  schema={schema}
+>
+  <Hero
+    eyebrow={c.home.hero.eyebrow}
+    title={c.home.hero.title1}
+    accent={c.home.hero.title2}
+    lede={c.home.hero.lede}
+    image="/img/hero-home.jpg"
+    badges={c.home.hero.badges}
+  >
+    <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
+    <a class="btn btn--ghost-light" href={route('compare', lang)}>Uruguai, Chile ou Paraguai?</a>
+  </Hero>
+
+  {/* PAÍSES */}
+  <section class="section" aria-labelledby="h-paises">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">{c.home.countries.eyebrow}</p>
+        <h2 id="h-paises">{c.home.countries.title}</h2>
+        <p class="lede">{c.home.countries.lede}</p>
+      </div>
+      <CountryCards lang={lang} />
+      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('compare', lang)}>{c.countriesIndex.compareCta} →</a></p>
+    </div>
+  </section>
+
+  {/* DORES */}
+  <section class="section section--mist" aria-labelledby="h-desafio">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">{c.home.pains.eyebrow}</p>
+        <h2 id="h-desafio">{c.home.pains.title}</h2>
+        <p class="lede">{c.home.pains.lede}</p>
+      </div>
+      <div class="grid grid--3">
+        {c.home.pains.items.map((i) => (
+          <div class="card reveal"><p class="card__title">{i.t}</p><p class="card__text">{i.d}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* SERVIÇOS */}
+  <section class="section" aria-labelledby="h-servicos">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">{c.home.services.eyebrow}</p>
+        <h2 id="h-servicos">{c.home.services.title}</h2>
+        <p class="lede">{c.home.services.lede}</p>
+      </div>
+      <ServiceGrid lang={lang} />
+    </div>
+  </section>
+
+  {/* MÉTODO */}
+  <section class="section section--mist" aria-labelledby="h-metodo">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">{c.home.method.eyebrow}</p>
+        <h2 id="h-metodo">{c.home.method.title}</h2>
+        <p class="lede">{c.home.method.lede}</p>
+      </div>
+      <MethodSteps lang={lang} />
+      <p class="mt-3 reveal"><a class="btn btn--ghost btn--sm" href={route('method', lang)}>Como trabalhamos em detalhe →</a></p>
+    </div>
+  </section>
+
+  {/* SERVIÇO PREMIUM — o que está incluído */}
+  <section class="section section--ink" aria-labelledby="h-incluido">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow eyebrow--light">{c.home.included.eyebrow}</p>
+        <h2 id="h-incluido">{c.home.included.title}</h2>
+        <p class="lede">{c.home.included.lede}</p>
+      </div>
+      <div class="grid grid--3 inc">
+        {c.home.included.items.map((i) => (
+          <div class="inc__i reveal"><p class="inc__t">{i.t}</p><p class="inc__d">{i.d}</p></div>
+        ))}
+      </div>
+      <div class="mt-3"><Proof /></div>
+    </div>
+  </section>
+
+  {/* POSICIONAMENTO */}
+  <section class="section" aria-labelledby="h-pos">
+    <div class="container pos">
+      <div class="section-head reveal">
+        <p class="eyebrow">{c.home.positioning.eyebrow}</p>
+        <h2 id="h-pos">{c.home.positioning.title}</h2>
+      </div>
+      <div class="pos__body reveal">
+        {c.home.positioning.text.split('\n\n').map((p) => <p>{p}</p>)}
+        <blockquote class="pos__q">{c.home.positioning.quote}</blockquote>
+      </div>
+    </div>
+  </section>
+
+  {/* REVISÃO — segundo público */}
+  <section class="section section--mist" aria-labelledby="h-rev">
+    <div class="container">
+      <div class="rev reveal">
+        <div>
+          <p class="eyebrow">{c.home.review.eyebrow}</p>
+          <h2 id="h-rev">{c.home.review.title}</h2>
+          <p class="lede">{c.home.review.text}</p>
+        </div>
+        <div class="rev__cta">
+          <a class="btn btn--gold" href={waLink(lang, 'review')} rel="noopener" target="_blank">{c.home.review.cta}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* BLOG */}
+  {posts.length > 0 && (
+    <section class="section" aria-labelledby="h-blog">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">{c.home.blog.eyebrow}</p>
+          <h2 id="h-blog">{c.home.blog.title}</h2>
+          <p class="lede">{c.home.blog.lede}</p>
+        </div>
+        <div class="grid grid--3">
+          {posts.map((p) => (
+            <a class="card reveal" href={postUrl(p)}>
+              <p class="card__num">{p.data.category} · {fmt.format(p.data.pubDate)}</p>
+              <p class="card__title">{p.data.title}</p>
+              <p class="card__text">{p.data.description}</p>
+              <p class="card__more">Ler análise →</p>
+            </a>
+          ))}
+        </div>
+        <p class="mt-3 center reveal"><a class="btn btn--ghost" href={route('blog', lang)}>{c.blog.all}</a></p>
+      </div>
+    </section>
+  )}
+
+  {/* CTA FINAL */}
+  <section class="section section--ink center" aria-labelledby="h-cta">
+    <div class="container">
+      <h2 id="h-cta" class="reveal">{c.home.cta.title}</h2>
+      <p class="lede reveal" style="margin-inline:auto">{c.home.cta.text}</p>
+      <p class="mt-3 reveal cta-final">
+        <a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a>
+        <a class="btn btn--ghost-light" href={waLink(lang)} rel="noopener" target="_blank">WhatsApp</a>
+      </p>
+      <p class="btn-note reveal">{c.home.cta.note}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .inc__i { border-left: 2px solid var(--gold); padding-left: 1.1rem; }
+  .inc__t { font-family: var(--serif); font-size: 1.28rem; color: var(--white); }
+  .inc__d { color: rgba(255,255,255,.68); font-size: .9rem; margin-top: .2rem; }
+  .pos { max-width: 820px; }
+  .pos__body p { margin-bottom: 1rem; color: var(--text); }
+  .pos__q { margin-top: 1.4rem; border-left: 3px solid var(--gold); padding: .5rem 0 .5rem 1.3rem; font-family: var(--serif); font-size: 1.3rem; font-style: italic; color: var(--indigo); }
+  .rev { display: grid; gap: 1.4rem; align-items: center; }
+  @media (min-width: 900px) { .rev { grid-template-columns: 1.7fr 1fr; } }
+  .rev__cta { display: flex; justify-content: flex-start; }
+  .cta-final { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+</style>

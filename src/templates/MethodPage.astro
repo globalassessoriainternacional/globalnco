@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import MethodSteps from '../components/MethodSteps.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const m = c.method; const path = route('method', lang);
+const schema = [{ '@type': 'HowTo', name: m.title, description: m.lede, step: m.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.t, text: s.detail })) }];
+---
+<Base lang={lang} title={m.metaTitle} description={m.metaDescription} path={path} alternates={alternatesFor('method')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: m.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{m.title}</h1><p class="lede">{m.lede}</p></div>
+    </div>
+  </section>
+  <section class="section section--mist"><div class="container"><MethodSteps lang={lang} detailed={true} /></div></section>
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-head reveal"><h2>{m.included.title}</h2><p class="lede">{m.included.lede}</p></div>
+      <div class="grid grid--2 inc">{m.included.items.map((i) => (<div class="inc__i reveal"><p class="inc__t">{i.t}</p><p class="inc__d">{i.d}</p></div>))}</div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal"><h2>{m.principles.title}</h2></div>
+      <div class="grid grid--2">{m.principles.items.map((i) => (<div class="card reveal"><p class="card__title">{i.t}</p><p class="card__text">{i.d}</p></div>))}</div>
+    </div>
+  </section>
+  <section class="section section--mist">
+    <div class="container">
+      <div class="section-head reveal"><h2>{m.cta.title}</h2><p class="lede">{m.cta.text}</p></div>
+      <div class="lead-wrap"><LeadForm lang={lang} /></div>
+    </div>
+  </section>
+</Base>
+<style>
+  .inc__i { border-left: 2px solid var(--gold); padding-left: 1.1rem; }
+  .inc__t { font-family: var(--serif); font-size: 1.25rem; color: #fff; }
+  .inc__d { color: rgba(255,255,255,.68); font-size: .9rem; margin-top: .2rem; }
+  .lead-wrap { max-width: 720px; }
+</style>

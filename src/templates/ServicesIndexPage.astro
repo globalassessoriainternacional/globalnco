@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, type Lang } from '../config/site';
+import { route, alternatesFor, SERVICE_FAMILIES, ALL_SERVICES } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const si = c.servicesIndex; const path = route('services', lang);
+const schema = [{ '@type': 'ItemList', name: si.title, itemListElement: ALL_SERVICES.map((s, i) => ({ '@type': 'ListItem', position: i + 1, name: c.services[s].title, url: absoluteUrl(route(s, lang)) })) }];
+const famImg: Record<string, string> = { live: '/img/faixa-viver.jpg', wealth: '/img/faixa-patrimonio.jpg', business: '/img/faixa-negocios.jpg' };
+---
+<Base lang={lang} title={si.metaTitle} description={si.metaDescription} path={path} alternates={alternatesFor('services')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: si.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{si.title}</h1><p class="lede">{si.lede}</p></div>
+    </div>
+  </section>
+
+  {SERVICE_FAMILIES.map((f, idx) => (
+    <section class={idx % 2 === 0 ? 'section' : 'section section--mist'}>
+      <div class="container">
+        <div class="fam reveal">
+          <img class="fam__img" src={famImg[f.key]} alt="" width="640" height="360" loading="lazy" decoding="async" />
+          <div>
+            <p class="eyebrow">Família {idx + 1} de 3</p>
+            <h2>{c.common.serviceFamilies[f.key].name}</h2>
+            <p class="lede">{c.common.serviceFamilies[f.key].desc}</p>
+          </div>
+        </div>
+        <div class="grid grid--2 mt-3">
+          {f.services.map((s) => (
+            <a class="card" href={route(s, lang)}>
+              <p class="card__title">{c.services[s].nav}</p>
+              <p class="card__text">{c.services[s].excerpt}</p>
+              <p class="card__more">Ver detalhes →</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section section--ink">
+    <div class="container center">
+      <h2 class="reveal">Não sabe por onde começar?</h2>
+      <p class="lede reveal" style="margin-inline:auto">O diagnóstico existe exatamente para isso: entender o seu caso antes de propor qualquer estrutura.</p>
+      <p class="mt-3 reveal"><a class="btn btn--gold" href={route('diagnostic', lang)}>Solicitar diagnóstico</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .fam { display: grid; gap: 1.6rem; align-items: center; }
+  @media (min-width: 900px) { .fam { grid-template-columns: .8fr 1.2fr; } }
+  .fam__img { width: 100%; height: auto; border-radius: var(--radius); object-fit: cover; aspect-ratio: 16/9; }
+</style>

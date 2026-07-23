@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 const SITE = 'https://globalnco.com';
 
+/** Prioridade e frequência por tipo de página (sinal de arquitetura para o Google). */
 function seoWeight(url) {
   const p = url.replace(SITE, '').replace(/\/$/, '') || '/';
   if (p === '/') return { priority: 1.0, changefreq: 'weekly' };
@@ -11,7 +12,7 @@ function seoWeight(url) {
   if (p.startsWith('/blog/')) return { priority: 0.7, changefreq: 'monthly' };
   if (['/uruguai', '/chile', '/paraguai'].includes(p)) return { priority: 0.95, changefreq: 'monthly' };
   if (p === '/uruguai-chile-ou-paraguai') return { priority: 0.9, changefreq: 'monthly' };
-  if (p.startsWith('/servicos/')) return { priority: 0.85, changefreq: 'monthly' };
+  if (p.startsWith('/servicos/') ) return { priority: 0.85, changefreq: 'monthly' };
   if (['/servicos', '/paises', '/diagnostico'].includes(p)) return { priority: 0.9, changefreq: 'monthly' };
   if (['/metodo', '/sobre', '/contato', '/perguntas-frequentes'].includes(p)) return { priority: 0.7, changefreq: 'monthly' };
   return { priority: 0.3, changefreq: 'yearly' };
@@ -29,6 +30,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      // Exclui páginas não indexáveis e os idiomas ainda não publicados (ES/EN redirecionam).
       filter: (page) =>
         !page.includes('/obrigado') &&
         !page.includes('/404') &&

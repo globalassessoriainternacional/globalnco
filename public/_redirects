@@ -1,0 +1,3 @@
+# Cloudflare Pages — Redirects
+# www → apex (ative também o domínio www.globalnco.com no projeto Pages)
+https://www.globalnco.com/* https://globalnco.com/:splat 301

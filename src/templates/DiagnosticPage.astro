@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { absoluteUrl, SITE_URL, type Lang } from '../config/site';
+import { route, alternatesFor } from '../i18n/routes';
+import { content } from '../data';
+interface Props { lang: Lang }
+const { lang } = Astro.props; const c = content[lang]; const d = c.diagnostic; const path = route('diagnostic', lang);
+const schema = [{ '@type': 'ContactPage', '@id': absoluteUrl(path) + '#webpage', url: absoluteUrl(path), name: d.metaTitle, description: d.metaDescription, about: { '@id': `${SITE_URL}/#organization` } }];
+---
+<Base lang={lang} title={d.metaTitle} description={d.metaDescription} path={path} alternates={alternatesFor('diagnostic')} schema={schema}>
+  <section class="section section--tight">
+    <div class="container">
+      <Breadcrumbs lang={lang} items={[{ label: d.breadcrumb }]} />
+      <div class="section-head mt-2"><h1>{d.title}</h1><p class="lede">{d.lede}</p></div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="container dg">
+      <div class="dg__form"><LeadForm lang={lang} /></div>
+      <aside class="dg__side">
+        <div class="dg__box reveal">
+          <h2 class="dg__h">{d.what.title}</h2>
+          <ul class="check-list mt-2">{d.what.items.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div class="dg__box reveal">
+          <h2 class="dg__h">{d.how.title}</h2>
+          <ol class="dg__steps">{d.how.items.map((i) => (<li><strong>{i.t}</strong><span>{i.d}</span></li>))}</ol>
+        </div>
+        <div class="dg__box dg__box--gold reveal">
+          <h2 class="dg__h">{d.commitments.title}</h2>
+          <ul class="check-list mt-2">{d.commitments.items.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+<style>
+  .dg { display: grid; gap: 2rem; align-items: start; }
+  @media (min-width: 980px) { .dg { grid-template-columns: 1.15fr .85fr; } }
+  .dg__side { display: grid; gap: 1.2rem; }
+  .dg__box { padding: 1.4rem 1.5rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+  .dg__box--gold { background: var(--mist); border-color: rgba(211,172,43,.4); }
+  .dg__h { font-size: 1.1rem; font-family: var(--sans); font-weight: 600; color: var(--ink); }
+  .dg__steps { list-style: none; padding: 0; display: grid; gap: .8rem; margin-top: .8rem; counter-reset: n; }
+  .dg__steps li { display: grid; gap: .1rem; }
+  .dg__steps strong { font-size: .9rem; color: var(--ink); }
+  .dg__steps span { font-size: .84rem; color: var(--muted); }
+</style>
